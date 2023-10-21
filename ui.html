@@ -1,0 +1,57 @@
+<!-- Standard link tag-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Nodes Plugin</title>
+  <link rel="stylesheet" href="../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+    }
+    button {
+      margin-top: 10px;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Compare Nodes Plugin</h1>
+  <div>
+    <label for="propertySelector">Select properties to compare:</label>
+    <select id="propertySelector">
+      <option value="selected">Selected Properties</option>
+      <option value="all">All Properties</option>
+    </select>
+  </div>
+  <button id="compareBtn">Compare Nodes</button>
+  
+  <div id="results" style="display:none;">
+    <h2>Comparison Results:</h2>
+    <div id="result1"></div>
+    <div id="result2"></div>
+  </div>
+
+  <script>
+    document.getElementById('compareBtn').addEventListener('click', () => {
+      const selectedOption = document.getElementById('propertySelector').value;
+      parent.postMessage({ pluginMessage: { type: 'compare_nodes', selectedOption } }, '*');
+    });
+
+    onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (message.type === 'comparison_result') {
+        document.getElementById('result1').innerHTML = `<pre>${message.properties1}</pre>`;
+        document.getElementById('result2').innerHTML = `<pre>${message.properties2}</pre>`;
+        document.getElementById('results').style.display = 'block';
+      } else if (message.type === 'error') {
+        alert(message.message);
+      }
+    };
+  </script>
+</body>
+</html>
